@@ -3,15 +3,33 @@ import React from "react";
 //import { nanoid } from "nanoid";
 import css from "../Phonebook/phonestyle.module.css";
 
-const ContactList = ({ contacts, onDeleteContact }) => {
+import { useSelector } from "react-redux/es/hooks/useSelector";
+import { useDispatch } from "react-redux";
+import { remove } from "redux/contactSlice";
+
+const ContactList = () => {
+
+  const dispatch = useDispatch();
+
+  // отримання значення тексту із state.filter для пошуку збігу у іменах контактів
+  const contactSearch = useSelector(state => state.filter.value);
+
+  // отримання переліку контактів із state.contacts для відображення
+  const contacts = useSelector(state => state.contacts.items);
+
+  // створення нового списку контактів із тих контактів, імена яких включають текст із state.filter
+  const visibleContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(contactSearch.toLowerCase())
+  );
+
   return (
     <ul className={css.lists}>
-      {contacts.map((contact) => (
+      {visibleContacts.map((contact) => (
         <li className={css.items} key={contact.id}>
           {contact.name}: {contact.number}
           <button
             className={css.btnDelete}
-            onClick={() => onDeleteContact(contact.id)}
+            onClick={() => dispatch(remove(contact.id))}
           >
             delete
           </button>
