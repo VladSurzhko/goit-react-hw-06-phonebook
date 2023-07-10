@@ -1,19 +1,38 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser, selectContacts } from "redux/contactSlice";
 
 import css from "../Phonebook/phonestyle.module.css";
 
- const ContactForm = ({ onAddContact }) => {
+ const ContactForm = () => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
   
   
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    onAddContact(name, number);
-   setName("");
-   setNumber("");
+    const isDuplicateContact = contacts.some(
+      (contact) => contact.name === name || contact.number === number
+    );
+
+    if (isDuplicateContact) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
+    dispatch(addUser(name, number));
+    setName("");
+    setNumber("");
   };
+
+
+  //   onAddContact(name, number);
+  //  setName("");
+  //  setNumber("");
+  // };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
